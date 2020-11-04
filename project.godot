@@ -15,7 +15,7 @@ _global_script_class_icons={
 
 [application]
 
-config/name="WebSocket Multiplayer Demo"
+config/name="SocialGame"
 run/main_scene="res://scene/main.tscn"
 config/icon="res://icon.png"
 

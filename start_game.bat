@@ -1,0 +1,1 @@
+"C:\Program Files\Godot\Godot_v3.2-stable_mono_win64\Godot_v3.2-stable_mono_win64.exe" --path C:/Users/Admin/Documents/Godot/SocialGame

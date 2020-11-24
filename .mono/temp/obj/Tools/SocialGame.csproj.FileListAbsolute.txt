@@ -1,0 +1,6 @@
+C:\Users\Admin\Documents\Godot\SocialGame\.mono\temp\bin\Tools\SocialGame.dll
+C:\Users\Admin\Documents\Godot\SocialGame\.mono\temp\bin\Tools\SocialGame.pdb
+C:\Users\Admin\Documents\Godot\SocialGame\.mono\temp\obj\Tools\SocialGame.csprojAssemblyReference.cache
+C:\Users\Admin\Documents\Godot\SocialGame\.mono\temp\obj\Tools\SocialGame.csproj.CoreCompileInputs.cache
+C:\Users\Admin\Documents\Godot\SocialGame\.mono\temp\obj\Tools\SocialGame.dll
+C:\Users\Admin\Documents\Godot\SocialGame\.mono\temp\obj\Tools\SocialGame.pdb

@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://script/main.gd" type="Script" id=1]
+[ext_resource path="res://script/main.cs" type="Script" id=1]
 [ext_resource path="res://scene/game.tscn" type="PackedScene" id=2]
 
 [node name="Main" type="Control"]
@@ -71,8 +71,8 @@ text = "Connect to"
 
 [node name="Disconnect" type="Button" parent="Panel/VBoxContainer/HBoxContainer2/HBoxContainer"]
 visible = false
-margin_left = 68.0
-margin_right = 152.0
+margin_left = 242.0
+margin_right = 326.0
 margin_bottom = 24.0
 text = "Disconnect"
 

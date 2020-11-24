@@ -4,8 +4,8 @@ using System;
 public class main : Control
 {
     //const members
-    private const uint DEF_PORT = 8080;
-    private const string PROTO_NAME = "ludus";
+    private const int DEF_PORT = 8080;
+    private readonly string[] PROTO_NAME = {"ludus"};
 
     //members referencing nodes
     Button HostBtn,
@@ -15,18 +15,18 @@ public class main : Control
     LineEdit NameEdit,
              HostEdit;
 
-    Game Game;
+    game Game;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
         //initialize member variables referencing nodes
         HostBtn = GetNode<Button>("Panel/VBoxContainer/HBoxContainer2/HBoxContainer/Host");
-        ConnectBtn= GetNode<Button>("Panl/VBoxContainer/HBoxContainer2/HBoxContainer/Connect");
+        ConnectBtn= GetNode<Button>("Panel/VBoxContainer/HBoxContainer2/HBoxContainer/Connect");
         DisconnectBtn = GetNode<Button>("Panel/VBoxContainer/HBoxContainer2/HBoxContainer/Disconnect");
         NameEdit = GetNode<LineEdit>("Panel/VBoxContainer/HBoxContainer/NameEdit");
         HostEdit = GetNode<LineEdit>("Panel/VBoxContainer/HBoxContainer2/Hostname");
-        Game = GetNode<Game>("Panel/VBoxContainer/Game");
+        Game = GetNode<game>("Panel/VBoxContainer/Game");
         //create connections
         GetTree().Connect("network_peer_disconnected", this, "_peer_disconnected");
         GetTree().Connect("network_peer_connected", this, "_peer_connected");
@@ -37,7 +37,7 @@ public class main : Control
         NameEdit.Text = "Username";
     }
 
-    public void StartGame()
+    void StartGame()
     {
         HostBtn.Disabled = true;
         NameEdit.Editable = false;
@@ -47,7 +47,7 @@ public class main : Control
         Game.Start();
     }
 
-    public void StopGame()
+    void StopGame()
     {
         HostBtn.Disabled = false;
         NameEdit.Editable = true;
@@ -57,4 +57,61 @@ public class main : Control
         Game.Stop();
     }
 
+    void CloseNetwork()
+    {
+        SafeDisconnect("server_disconnected", this, "CloseNetwork");
+        SafeDisconnect("connection_failed", this, "CloseNetwork");
+        SafeDisconnect("connected_to_server", this, "Connected");
+        StopGame();
+        AcceptDialog acceptDialog = GetNode<AcceptDialog>("AcceptDialog");
+        acceptDialog.ShowModal();
+        acceptDialog.GetCloseButton().GrabFocus();
+        GetTree().NetworkPeer = null;
+    }
+
+    void SafeDisconnect(string signal, Godot.Object target, string method)
+    {
+        if(GetTree().IsConnected(signal, target, method))
+            GetTree().Disconnect(signal, target, method);
+    }
+
+    void Connected()
+    {
+        Game.Rpc("SetPlayerName", NameEdit.Text);
+    }
+
+    void _peer_connected(int id)
+    {
+        Game.OnPeerAdd(id);
+    }
+
+    void _peer_disconnected(int id)
+    {
+        Game.OnPeerDel(id);
+    }
+
+    void _on_Host_pressed()
+    {
+        WebSocketServer host = new WebSocketServer();
+        host.Listen(DEF_PORT, PROTO_NAME, true);
+        GetTree().Connect("server_disconnected", this, "CloseNetwork");
+        GetTree().NetworkPeer = host;
+        Game.AddPlayer(1, NameEdit.Text);
+        StartGame();
+    }
+
+    void _on_Disconnect_pressed()
+    {
+        CloseNetwork();
+    }
+
+    void _on_Connect_pressed()
+    {
+        WebSocketClient host = new WebSocketClient();
+        host.ConnectToUrl("ws://" + HostEdit.Text + ":" + DEF_PORT.ToString(), PROTO_NAME, true);
+        GetTree().Connect("connection_failed", this, "CloseNetwork");
+        GetTree().Connect("connected_to_server", this, "Connected");
+        GetTree().NetworkPeer = host;
+        StartGame();
+    }
 }

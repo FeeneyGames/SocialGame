@@ -1,15 +1,15 @@
 using Godot;
 using System;
 
-public class Game : Control
+public class game : Control
 {
     Texture Crown = ResourceLoader.Load<Texture>("res://img/crown.png");
     ItemList List;
     Button Action;
 
-    Godot.Collections.Array<int> Players;
+    Godot.Collections.Array<int> Players = new Godot.Collections.Array<int>();
     int Turn = -1;
-    RandomNumberGenerator Random;
+    RandomNumberGenerator Random = new RandomNumberGenerator();
 
     public override void _Ready()
     {
@@ -58,12 +58,14 @@ public class Game : Control
     {
         Turn = turn;
         if(Turn < Players.Count)
+        {
             for(int i = 0; i < Players.Count; i++)
                 if(i == Turn)
                     List.SetItemIcon(i, Crown);
                 else
                     List.SetItemIcon(i, null);
             Action.Disabled = Players[Turn] != GetTree().GetNetworkUniqueId();
+        }
     }
 
     [Sync]
@@ -82,7 +84,7 @@ public class Game : Control
     }
 
     [Sync]
-    void AddPlayer(int id, String name="")
+    public void AddPlayer(int id, String name="")
     {
         Players.Add(id);
         if(name == "")
@@ -119,18 +121,18 @@ public class Game : Control
         Action.Disabled = true;
     }
 
-    void OnPeerAdd(int id)
+    public void OnPeerAdd(int id)
     {
         if(GetTree().IsNetworkServer())
         {
             for(int i = 0; i < Players.Count; i++)
                 RpcId(id, "AddPlayer", Players[i], GetPlayerName(i));
-            Rpc("AddPlayer", id);
+            Rpc("AddPlayer", id, "");
             RpcId(id, "SetTurn", Turn);
         }
     }
 
-    void OnPeerDel(int id)
+    public void OnPeerDel(int id)
     {
         if(GetTree().IsNetworkServer())
         {
@@ -144,7 +146,7 @@ public class Game : Control
         GetNode<RichTextLabel>("HBoxContainer/RichTextLabel").AddText(text + "\n");
     }
 
-    void OnActionPressed()
+    void _on_Action_pressed()
     {
         if(GetTree().IsNetworkServer())
         {
